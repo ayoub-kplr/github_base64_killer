@@ -47,8 +47,8 @@ def get_repos_contents(repo):
             contents.extend(repo.get_contents(file_content.path))
         else:
             if file_content.path[-6:] == ".ipynb":
-                convert_base64(repo.get_contents(file_content.path).decoded_content)
-                count += 1
+                count += convert_base64(repo.get_contents(file_content.path).decoded_content)
+
     return count
 
 
@@ -59,19 +59,24 @@ def convert_base64(content):
     global counter
     # print("Content",content)
     found = ""
+    localcounter = 0
     try:
-        found = re.search('(data:image\/[^;]+;base64[^\"]+)', str(content)).group(1)
-        found = found.split(",")[1].split(")")[0]
-        print(found)
-        from base64topng import convert
-        convert(found, "images/{}.png".format(counter))
-        counter += 1
+        found = re.findall('(data:image\/[^;]+;base64[^\"]+)', str(content))
+        # print(found)
+        for img in found:
+            img = img.split(",")[1].split(")")[0]
+            # print(found)
+            from base64topng import convert
+            convert(img, "images/{}.png".format(counter))
+            counter += 1
+            localcounter += 1
     except AttributeError:
         found = ''  # apply your error handling
+    return localcounter
 
 
 count = 0
 for repo in repos:
     count += get_repos_contents(repo)
 
-print(count)
+print("Converted images :",count)
