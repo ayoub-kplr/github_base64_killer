@@ -47,19 +47,20 @@ def get_repos_contents(repo):
             contents.extend(repo.get_contents(file_content.path))
         else:
             if file_content.path[-6:] == ".ipynb":
-                count += count_base64(repo.get_contents(file_content.path).decoded_content)
+                convert_base64(repo.get_contents(file_content.path).decoded_content)
     return count
 
 
 counter = 0
 
 
-def count_base64(content):
+def convert_base64(content):
     global counter
     # print("Content",content)
     found = ""
     try:
         found = re.search('(data:image\/[^;]+;base64[^\"]+)', str(content)).group(1)
+        found = found.split(",")[1].split(")")[0]
         print(found)
         from base64topng import convert
         convert(found, "{}.png".format(counter))
