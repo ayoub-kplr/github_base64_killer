@@ -48,6 +48,7 @@ def get_repos_contents(repo):
         else:
             if file_content.path[-6:] == ".ipynb":
                 convert_base64(repo.get_contents(file_content.path).decoded_content)
+                count += 1
     return count
 
 
@@ -63,12 +64,10 @@ def convert_base64(content):
         found = found.split(",")[1].split(")")[0]
         print(found)
         from base64topng import convert
-        convert(found, "{}.png".format(counter))
+        convert(found, "images/{}.png".format(counter))
         counter += 1
     except AttributeError:
-        # AAA, ZZZ not found in the original string
         found = ''  # apply your error handling
-    # return str(content).count("(data:image/png;base64,")
 
 
 count = 0
